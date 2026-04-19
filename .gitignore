@@ -1,0 +1,36 @@
+# --- macOS ---
+.DS_Store
+
+# --- Editor / tooling ---
+.vscode/
+.idea/
+.claude/
+*.log
+*.swp
+
+# --- Environment ---
+.env
+.env.local
+
+# --- Build artefacts (none yet, future-proof) ---
+node_modules/
+dist/
+.cache/
+
+# --- Unused / duplicate media not referenced by the site ---
+# (Originals are kept locally; they just don't go into git)
+assets/images/testimonials/3 decades of blurred vision.mp4
+assets/images/testimonials/Cataract,testimonial.1.mp4
+assets/images/testimonials/Your eyes, our priority.mp4
+assets/images/testimonials/HANADI-3-.mp4
+assets/images/testimonials/WhatsApp Image*
+
+assets/images/clinic_photos/IMG_20260328_111646.jpg
+assets/images/clinic_photos/IMG_20260328_115917.jpg
+assets/images/clinic_photos/IMG_20260328_120436.jpg
+assets/images/clinic_photos/IMG_20260328_120615.jpg
+assets/images/clinic_photos/WhatsApp Image 2026-03-28 at 10.54.59 (1).jpeg
+assets/images/clinic_photos/WhatsApp Image 2026-03-28 at 10.54.59 (2).jpeg
+
+# unused legacy orthoptek thumb
+assets/images/web/orthoptek-device.jpg
