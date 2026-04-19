@@ -73,17 +73,33 @@
   const navToggle = document.querySelector('.nav-toggle');
   const siteNav = document.querySelector('.site-nav');
   if (navToggle && siteNav) {
+    // Create a dimmed backdrop once, wired to close the drawer on tap
+    const backdrop = document.createElement('div');
+    backdrop.className = 'nav-backdrop';
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(backdrop);
+
+    const openNav = () => {
+      navToggle.setAttribute('aria-expanded', 'true');
+      siteNav.classList.add('is-open');
+      backdrop.classList.add('is-visible');
+      document.body.style.overflow = 'hidden';
+    };
     const closeNav = () => {
       navToggle.setAttribute('aria-expanded', 'false');
       siteNav.classList.remove('is-open');
+      backdrop.classList.remove('is-visible');
       document.body.style.overflow = '';
     };
-    navToggle.addEventListener('click', () => {
+    const toggleNav = (e) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
       const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-      navToggle.setAttribute('aria-expanded', String(!expanded));
-      siteNav.classList.toggle('is-open', !expanded);
-      document.body.style.overflow = !expanded ? 'hidden' : '';
-    });
+      if (expanded) closeNav(); else openNav();
+    };
+
+    // Use both click and touchstart for reliable tap response on iOS
+    navToggle.addEventListener('click', toggleNav);
+    backdrop.addEventListener('click', closeNav);
     siteNav.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeNav));
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && siteNav.classList.contains('is-open')) closeNav();

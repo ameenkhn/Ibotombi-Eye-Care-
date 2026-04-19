@@ -466,6 +466,8 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 
 .nav-toggle {
   display: none;
+  position: relative;
+  z-index: 80;
   width: 48px; height: 48px;
   border-radius: var(--r-sm);
   background: var(--teal-50);
@@ -473,6 +475,20 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   align-items: center;
   justify-content: center;
 }
+.nav-toggle[aria-expanded="true"] { background: var(--navy-800); color: #fff; }
+
+/* Dimmed backdrop behind the mobile drawer */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 27, 51, 0.45);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s var(--ease-out), visibility 0.3s var(--ease-out);
+  z-index: 65;
+}
+.nav-backdrop.is-visible { opacity: 1; visibility: visible; }
 .nav-toggle span { position: relative; display: block; width: 22px; height: 2px; background: currentColor; border-radius: 2px; transition: var(--dur-fast); }
 .nav-toggle span::before, .nav-toggle span::after {
   content: ""; position: absolute; left: 0; width: 22px; height: 2px; background: currentColor; border-radius: 2px; transition: var(--dur-fast);
@@ -2509,11 +2525,13 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   .section-header { margin-bottom: 36px; }
   .section-header .lead { margin-top: 8px; }
 
-  /* Topbar */
-  .topbar { font-size: 0.78rem; padding: 8px 0; }
-  .topbar-note { flex-direction: column; align-items: flex-start; gap: 4px; }
-  .topbar-note span { line-height: 1.4; }
-  .topbar-actions { gap: 10px; }
+  /* Topbar — hidden on mobile; the header already surfaces phone & location */
+  .topbar { display: none; }
+
+  /* Hero visual — hidden on mobile; keep the copy stack clean */
+  .hero-visual { display: none; }
+  .hero { padding: 30px 0 48px; }
+  .hero-metrics { margin-top: 40px; }
 
   /* Header — mobile drawer */
   .site-header { position: sticky; }
