@@ -18,26 +18,42 @@
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ----------------------------------------------------------------------
-     Preloader — fade out once page is fully loaded (with brief min delay
-     so it does not flash on cached loads)
+     Preloader — fade out once page is loaded, with a guaranteed minimum
+     display time measured from the moment this script starts (so cached
+     loads on mobile still show the branded loader).
   ---------------------------------------------------------------------- */
   const preloader = document.getElementById('preloader');
   if (preloader) {
-    const MIN_MS = prefersReducedMotion ? 100 : 650;
-    const HIDE_MS = 700;
+    // Lock body scroll while the preloader is visible
+    const htmlEl = document.documentElement;
+    const prev = { htmlOverflow: htmlEl.style.overflow, bodyOverflow: document.body.style.overflow };
+    htmlEl.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
+    const scriptStart = performance.now();
+    const MIN_MS = prefersReducedMotion ? 300 : 1500;   // guaranteed display from script start
+    const HIDE_MS = 700;                                // fade-out duration (matches CSS)
+    let hidden = false;
+
     const hide = () => {
+      if (hidden) return;
+      hidden = true;
       preloader.classList.add('is-hidden');
-      setTimeout(() => preloader.remove(), HIDE_MS);
+      htmlEl.style.overflow = prev.htmlOverflow;
+      document.body.style.overflow = prev.bodyOverflow;
+      setTimeout(() => { if (preloader.parentNode) preloader.remove(); }, HIDE_MS);
     };
     const trigger = () => {
-      const elapsed = performance.now();
+      const elapsed = performance.now() - scriptStart;
       const wait = Math.max(0, MIN_MS - elapsed);
       setTimeout(hide, wait);
     };
+
     if (document.readyState === 'complete') trigger();
     else window.addEventListener('load', trigger, { once: true });
-    // Safety fallback — never let the preloader hang
-    setTimeout(hide, 6000);
+
+    // Safety fallback — never let the preloader hang if load never fires
+    setTimeout(hide, 7000);
   }
 
   /* ----------------------------------------------------------------------

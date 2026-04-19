@@ -2257,6 +2257,12 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 .preloader {
   position: fixed;
   inset: 0;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100svh;
   z-index: 9999;
   display: grid;
   place-items: center;
@@ -2266,6 +2272,7 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
     linear-gradient(160deg, #0A2540 0%, #061B33 60%, #0F3558 100%);
   transition: opacity 0.6s var(--ease-out), visibility 0.6s var(--ease-out);
   overflow: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 .preloader::before,
 .preloader::after {
