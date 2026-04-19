@@ -704,12 +704,19 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 }
 .hero-metric-icon svg { width: 22px; height: 22px; }
 .hero-metric strong {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   font-family: var(--font-display); font-size: 1.6rem; font-weight: 800;
-  color: var(--navy-800); line-height: 1.1;
+  color: var(--navy-800); line-height: 1;
 }
-.hero-metric strong .unit { font-size: 1rem; color: var(--teal-600); margin-left: 2px; }
-.hero-metric span { color: var(--text-soft); font-size: 0.9rem; margin-top: 6px; display: block; }
+.hero-metric strong .unit {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--teal-600);
+}
+.hero-metric > span { color: var(--text-soft); font-size: 0.9rem; margin-top: 6px; display: block; }
 
 /* --------------------------------------------------------------------------
    Page hero (subpages)
@@ -1110,7 +1117,9 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 }
 .stat-block:hover { transform: translateY(-3px); }
 .stat-block strong {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   font-family: var(--font-display);
   font-size: 2.6rem; font-weight: 800;
   line-height: 1;
@@ -1118,8 +1127,13 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   margin-bottom: 8px;
   letter-spacing: -0.02em;
 }
-.stat-block strong .unit { font-size: 1rem; color: var(--teal-300); margin-left: 3px; }
-.stat-block span { color: rgba(255,255,255,0.74); font-size: 0.9rem; line-height: 1.5; }
+.stat-block strong .unit {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--teal-300);
+}
+.stat-block > span { color: rgba(255,255,255,0.74); font-size: 0.9rem; line-height: 1.5; }
 
 /* --------------------------------------------------------------------------
    Feature cards (generic)
