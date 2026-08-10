@@ -7,7 +7,6 @@
    - Lightweight testimonial carousel (autoplay, dots, swipe)
    - Marquee duplication for seamless loop
    - FAQ accordion: exclusive-open behavior
-   - Appointment form -> WhatsApp handoff
    - Back-to-top floating button
    - Current-year stamp in footers
    ========================================================================= */
@@ -18,21 +17,19 @@
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ----------------------------------------------------------------------
-     Preloader — fade out once page is loaded, with a guaranteed minimum
-     display time measured from the moment this script starts (so cached
-     loads on mobile still show the branded loader).
+     Preloader — dismissed as soon as the DOM is ready.
+     It deliberately does NOT wait for window.load (that waits on every
+     image) and enforces no artificial minimum display time, so a fast
+     connection sees content immediately instead of a held splash screen.
   ---------------------------------------------------------------------- */
   const preloader = document.getElementById('preloader');
   if (preloader) {
-    // Lock body scroll while the preloader is visible
     const htmlEl = document.documentElement;
     const prev = { htmlOverflow: htmlEl.style.overflow, bodyOverflow: document.body.style.overflow };
     htmlEl.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
 
-    const scriptStart = performance.now();
-    const MIN_MS = prefersReducedMotion ? 300 : 1500;   // guaranteed display from script start
-    const HIDE_MS = 700;                                // fade-out duration (matches CSS)
+    const HIDE_MS = 260;                                // fade-out duration (matches CSS)
     let hidden = false;
 
     const hide = () => {
@@ -43,17 +40,15 @@
       document.body.style.overflow = prev.bodyOverflow;
       setTimeout(() => { if (preloader.parentNode) preloader.remove(); }, HIDE_MS);
     };
-    const trigger = () => {
-      const elapsed = performance.now() - scriptStart;
-      const wait = Math.max(0, MIN_MS - elapsed);
-      setTimeout(hide, wait);
-    };
 
-    if (document.readyState === 'complete') trigger();
-    else window.addEventListener('load', trigger, { once: true });
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', hide, { once: true });
+    } else {
+      hide();
+    }
 
-    // Safety fallback — never let the preloader hang if load never fires
-    setTimeout(hide, 7000);
+    // Safety fallback — never let the preloader hang
+    setTimeout(hide, 3000);
   }
 
   /* ----------------------------------------------------------------------
@@ -233,37 +228,6 @@
     carousel.addEventListener('mouseleave', start);
     goTo(0);
     start();
-  }
-
-  /* ----------------------------------------------------------------------
-     Appointment form -> WhatsApp
-  ---------------------------------------------------------------------- */
-  const appointmentForm = document.querySelector('.appointment-form');
-  if (appointmentForm) {
-    appointmentForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const d = new FormData(appointmentForm);
-      const get = (k) => (d.get(k) || '').toString().trim();
-      const lines = [
-        'Hello Ibotombi Eye Care, I would like to request an appointment.',
-        get('name')    && `• Name: ${get('name')}`,
-        get('phone')   && `• Phone: ${get('phone')}`,
-        get('service') && `• Service needed: ${get('service')}`,
-        get('date')    && `• Preferred day/time: ${get('date')}`,
-        get('age')     && `• Age: ${get('age')}`,
-        get('message') && `• Note: ${get('message')}`,
-      ].filter(Boolean);
-      const url = `https://wa.me/919863006204?text=${encodeURIComponent(lines.join('\n'))}`;
-      window.open(url, '_blank', 'noopener');
-      // Provide friendly feedback
-      const btn = appointmentForm.querySelector('button[type="submit"]');
-      if (btn) {
-        const original = btn.innerHTML;
-        btn.innerHTML = 'Opening WhatsApp…';
-        btn.disabled = true;
-        setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 1800);
-      }
-    });
   }
 
   /* ----------------------------------------------------------------------

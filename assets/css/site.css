@@ -3,8 +3,6 @@
    Navy + teal clinical palette, bespoke typography, rich motion.
    ======================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&display=swap');
-
 /* --------------------------------------------------------------------------
    Tokens
 -------------------------------------------------------------------------- */
@@ -155,7 +153,6 @@ h4 { font-size: 1.08rem; }
 p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 
 .lead { font-size: 1.15rem; color: var(--text-soft); line-height: 1.7; }
-.subtle { color: var(--text-soft); }
 
 /* Reusable headline accents */
 .accent-serif {
@@ -169,10 +166,8 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
    Layout helpers
 -------------------------------------------------------------------------- */
 .container { width: var(--container); margin-inline: auto; }
-.container.narrow { width: var(--container-narrow); }
 
 .section { padding: clamp(72px, 8vw, 120px) 0; position: relative; }
-.section.tight { padding: clamp(48px, 6vw, 80px) 0; }
 
 .section-header { max-width: 760px; margin-bottom: clamp(40px, 4vw, 60px); }
 .section-header.center { margin-inline: auto; text-align: center; }
@@ -207,13 +202,6 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 }
 .eyebrow.on-dark { background: rgba(255,255,255,0.08); color: var(--teal-300); }
 .eyebrow.on-dark::before { background: var(--teal-300); box-shadow: 0 0 0 3px rgba(91, 208, 232, 0.22); }
-
-/* Decorative dividers */
-.divider-wave {
-  display: block;
-  width: 100%;
-  height: 60px;
-}
 
 /* --------------------------------------------------------------------------
    Buttons
@@ -298,19 +286,6 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.4);
 }
 .button-outline-light:hover { background: rgba(255,255,255,0.08); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.9); }
-
-/* Icon-only button */
-.icon-btn {
-  width: 46px; height: 46px;
-  border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: var(--paper);
-  color: var(--navy-700);
-  box-shadow: var(--sh-sm);
-  transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
-}
-.icon-btn:hover { background: var(--teal-500); color: #fff; transform: translateY(-2px); }
-.icon-btn svg { width: 18px; height: 18px; }
 
 /* --------------------------------------------------------------------------
    Topbar
@@ -430,6 +405,19 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   margin-top: 4px;
 }
 
+/* Dimmed backdrop behind the mobile drawer */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 27, 51, 0.45);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s var(--ease-out), visibility 0.3s var(--ease-out);
+  z-index: 65;
+}
+.nav-backdrop.is-visible { opacity: 1; visibility: visible; }
+
 .site-nav {
   display: flex;
   align-items: center;
@@ -476,19 +464,6 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   justify-content: center;
 }
 .nav-toggle[aria-expanded="true"] { background: var(--navy-800); color: #fff; }
-
-/* Dimmed backdrop behind the mobile drawer */
-.nav-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(6, 27, 51, 0.45);
-  backdrop-filter: blur(2px);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s var(--ease-out), visibility 0.3s var(--ease-out);
-  z-index: 65;
-}
-.nav-backdrop.is-visible { opacity: 1; visibility: visible; }
 .nav-toggle span { position: relative; display: block; width: 22px; height: 2px; background: currentColor; border-radius: 2px; transition: var(--dur-fast); }
 .nav-toggle span::before, .nav-toggle span::after {
   content: ""; position: absolute; left: 0; width: 22px; height: 2px; background: currentColor; border-radius: 2px; transition: var(--dur-fast);
@@ -1066,6 +1041,13 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 .section-deep p, .section-deep span { color: rgba(255,255,255,0.78); }
 .section-deep .lead { color: rgba(255,255,255,0.84); }
 
+/* The floating badge stays a white card even on dark sections — keep its ink dark */
+.section-deep .split-media-badge strong { color: var(--navy-800); }
+.section-deep .split-media-badge span { color: var(--text-soft); }
+
+/* Detail lists sit directly on the dark ground, so they need light ink */
+.section-deep .detail-list li { color: rgba(255,255,255,0.82); }
+
 .section-deep .benefit-item {
   background: rgba(255,255,255,0.05);
   border-color: rgba(255,255,255,0.12);
@@ -1295,6 +1277,114 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 .span-5 { grid-column: span 5; aspect-ratio: 16/10; }
 .span-4 { grid-column: span 4; aspect-ratio: 1/1; }
 .span-8 { grid-column: span 8; aspect-ratio: 16/9; }
+.span-12 { grid-column: span 12; aspect-ratio: 16/7; }
+.span-6 { grid-column: span 6; aspect-ratio: 2/1; }
+
+/* --------------------------------------------------------------------------
+   Exclusivity marker — used for the corneal cross-linking (C3R) story
+-------------------------------------------------------------------------- */
+.only-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px 6px 11px;
+  border-radius: var(--r-pill);
+  background: var(--grad-gold);
+  color: #4A320A;
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 18px -8px rgba(226, 163, 45, 0.9);
+}
+.only-tag svg { width: 14px; height: 14px; flex-shrink: 0; }
+.only-tag.on-dark { background: rgba(244, 199, 112, 0.16); color: var(--gold-400); box-shadow: none; }
+
+/* Service card promoted as the clinic's exclusive offering */
+.service-card.is-exclusive {
+  border-color: var(--gold-400);
+  background: linear-gradient(180deg, var(--gold-100) 0%, var(--paper) 42%);
+}
+.service-card.is-exclusive .service-icon { background: var(--gold-100); color: #A9741A; }
+.service-card.is-exclusive:hover { border-color: var(--gold-500); }
+.service-card.is-exclusive:hover .service-icon { background: var(--grad-gold); color: #4A320A; }
+.service-card.is-exclusive::before { background: linear-gradient(180deg, rgba(226,163,45,0.12), transparent 60%); }
+.service-card .only-tag { margin-bottom: 14px; }
+
+/* --------------------------------------------------------------------------
+   Empathy band — the clinic's care promise, reused across pages
+-------------------------------------------------------------------------- */
+.empathy-band {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  padding: 54px 56px;
+  background: var(--grad-primary);
+  box-shadow: var(--sh-lg);
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+.empathy-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grad-halo);
+  pointer-events: none;
+}
+.empathy-band > * { position: relative; z-index: 1; }
+.empathy-band h2, .empathy-band h3 { color: #fff; margin-bottom: 14px; }
+.empathy-band p { color: rgba(255, 255, 255, 0.82); margin-bottom: 0; }
+.empathy-band .eyebrow { background: rgba(255,255,255,0.09); color: var(--teal-300); }
+.empathy-band .eyebrow::before { background: var(--teal-300); box-shadow: 0 0 0 3px rgba(91,208,232,0.2); }
+
+.empathy-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+.empathy-points li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background var(--dur-base), border-color var(--dur-base);
+}
+.empathy-points li:hover { background: rgba(255,255,255,0.1); border-color: var(--teal-300); }
+.empathy-points .ep-icon {
+  flex-shrink: 0;
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  background: rgba(91, 208, 232, 0.16);
+  color: var(--teal-300);
+}
+.empathy-points .ep-icon svg { width: 20px; height: 20px; }
+.empathy-points strong { display: block; color: #fff; font-family: var(--font-display); font-size: 0.98rem; margin-bottom: 3px; }
+.empathy-points span { display: block; color: rgba(255,255,255,0.72); font-size: 0.88rem; line-height: 1.6; }
+
+/* --------------------------------------------------------------------------
+   Proof strip caption — for outreach / camp photo evidence
+-------------------------------------------------------------------------- */
+.proof-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+  color: var(--text-faint);
+  font-size: 0.88rem;
+}
+.proof-note svg { width: 16px; height: 16px; color: var(--teal-500); flex-shrink: 0; }
+.section-deep .proof-note { color: rgba(255, 255, 255, 0.7); }
+.section-deep .proof-note svg { color: var(--teal-300); }
 
 /* --------------------------------------------------------------------------
    Full gallery grid (Gallery.html)
@@ -1608,15 +1698,6 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   display: block;
   border-radius: var(--r-sm);
 }
-.testimonial-slide .t-media.is-photo {
-  padding: 0;
-  aspect-ratio: 3/4;
-}
-.testimonial-slide .t-media.is-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 
 .carousel-controls {
   display: flex;
@@ -1808,39 +1889,6 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   .booking-map { aspect-ratio: 1/1; }
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.field label {
-  color: var(--navy-800);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-}
-.field input, .field select, .field textarea {
-  width: 100%;
-  padding: 14px 16px;
-  border: 1.5px solid var(--line-strong);
-  border-radius: var(--r-sm);
-  background: var(--paper);
-  color: var(--ink-700);
-  font-size: 0.95rem;
-  transition: border-color var(--dur-fast), box-shadow var(--dur-fast), background var(--dur-fast);
-}
-.field textarea { min-height: 110px; resize: vertical; }
-.field input:focus, .field select:focus, .field textarea:focus {
-  outline: none;
-  border-color: var(--teal-500);
-  box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.12);
-  background: #fff;
-}
-.field input::placeholder, .field textarea::placeholder { color: var(--text-faint); }
-
 .form-note { font-size: 0.82rem; color: var(--text-faint); margin-top: 12px; }
 
 /* Contact info cards */
@@ -1883,23 +1931,6 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 .contact-card p { color: var(--text-soft); font-size: 0.92rem; margin-bottom: 12px; }
 
 .contact-row { display: flex; flex-wrap: wrap; gap: 10px; }
-
-.map-frame {
-  border-radius: var(--r-xl);
-  overflow: hidden;
-  box-shadow: var(--sh-lg);
-  aspect-ratio: 16/9;
-  position: relative;
-  border: 6px solid var(--paper);
-}
-.map-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
-.map-frame::before {
-  content: "";
-  position: absolute; inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px var(--line-strong);
-}
 
 /* --------------------------------------------------------------------------
    CTA band & newsletter
@@ -2236,11 +2267,6 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
-.reveal-delay-1 { transition-delay: 0.08s; }
-.reveal-delay-2 { transition-delay: 0.16s; }
-.reveal-delay-3 { transition-delay: 0.24s; }
-.reveal-delay-4 { transition-delay: 0.32s; }
-
 @keyframes floatA {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -2276,11 +2302,6 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   to { transform: rotate(360deg); }
 }
 
-/* Animated eye SVG classes */
-.eye-svg .eye-lid { transform-origin: center; animation: blink 5.5s ease-in-out infinite; }
-.eye-svg .eye-iris { animation: drift 7s ease-in-out infinite; transform-origin: center; }
-.eye-svg .eye-ring { animation: spin-slow 22s linear infinite; transform-origin: center; }
-
 /* --------------------------------------------------------------------------
    Preloader
 -------------------------------------------------------------------------- */
@@ -2300,7 +2321,7 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
     radial-gradient(ellipse at top, rgba(34,183,214,0.18), transparent 55%),
     radial-gradient(ellipse at bottom, rgba(228,163,45,0.08), transparent 55%),
     linear-gradient(160deg, #0A2540 0%, #061B33 60%, #0F3558 100%);
-  transition: opacity 0.6s var(--ease-out), visibility 0.6s var(--ease-out);
+  transition: opacity 0.26s var(--ease-out), visibility 0.26s var(--ease-out);
   overflow: hidden;
   -webkit-overflow-scrolling: touch;
 }
@@ -2486,14 +2507,45 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
 -------------------------------------------------------------------------- */
 .is-hidden { display: none !important; }
 .text-center { text-align: center; }
-.mt-20 { margin-top: 20px; }
-.mt-30 { margin-top: 30px; }
 .mt-40 { margin-top: 40px; }
 
 /* --------------------------------------------------------------------------
    Responsive — comprehensive mobile pass
    Breakpoints:  1100px (tablet-wide) · 820px (tablet) · 640px (phone) · 420px (small phone)
 -------------------------------------------------------------------------- */
+
+/* =========================== 1279px ===========================
+   The full desktop nav (8 links + CTA) needs ~1200px to fit at all, and
+   ~1280px before the brand lock-up stops wrapping. Below that the drawer
+   takes over — previously it only kicked in at 820px, which left the nav
+   visually clipped on every laptop and landscape tablet in between.
+   ============================================================ */
+@media (max-width: 1279px) {
+  .site-nav {
+    position: fixed;
+    inset: 0 0 0 18%;
+    background: var(--paper);
+    padding: 90px 24px 40px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    transform: translateX(100%);
+    transition: transform 0.4s var(--ease-out);
+    box-shadow: -20px 0 60px -20px rgba(10,37,64,0.3);
+    overflow-y: auto;
+    z-index: 70;
+  }
+  .site-nav.is-open { transform: translateX(0); }
+  .site-nav a:not(.button) {
+    width: 100%;
+    font-size: 1.02rem;
+    padding: 14px 16px;
+    border-radius: var(--r-md);
+  }
+  .site-nav a:not(.button)[aria-current="page"]::after { display: none; }
+  .site-nav .button { margin: 14px 0 0; width: 100%; justify-content: center; }
+  .nav-toggle { display: inline-flex; }
+}
 
 /* =========================== 1100px  =========================== */
 @media (max-width: 1100px) {
@@ -2514,7 +2566,8 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   .cta-layout { grid-template-columns: minmax(0, 1fr); }
   .cta-actions { justify-content: flex-start; }
   .mosaic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .span-7, .span-5, .span-4, .span-8 { grid-column: span 1; aspect-ratio: 4/3; }
+  .span-7, .span-5, .span-4, .span-6, .span-8, .span-12 { grid-column: span 1; aspect-ratio: 4/3; }
+  .empathy-band { grid-template-columns: minmax(0, 1fr); gap: 34px; padding: 44px 40px; }
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 200px; }
   .gallery-card.wide { grid-column: span 2; }
   .testimonial-slide { grid-template-columns: minmax(0, 1fr); padding: 30px; gap: 28px; }
@@ -2547,36 +2600,12 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   .hero { padding: 30px 0 48px; }
   .hero-metrics { margin-top: 40px; }
 
-  /* Header — mobile drawer */
+  /* Header — compact brand (drawer itself starts at 1199px, see above) */
   .site-header { position: sticky; }
   .nav-shell { padding: 12px 0; gap: 12px; }
   .brand-logo { width: 44px; height: 44px; border-radius: 12px; }
   .brand-title { font-size: 1.02rem; }
   .brand-tag { font-size: 0.66rem; letter-spacing: 0.1em; }
-  .site-nav {
-    position: fixed;
-    inset: 0 0 0 18%;
-    background: var(--paper);
-    padding: 90px 24px 40px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4px;
-    transform: translateX(100%);
-    transition: transform 0.4s var(--ease-out);
-    box-shadow: -20px 0 60px -20px rgba(10,37,64,0.3);
-    overflow-y: auto;
-    z-index: 70;
-  }
-  .site-nav.is-open { transform: translateX(0); }
-  .site-nav a:not(.button) {
-    width: 100%;
-    font-size: 1.02rem;
-    padding: 14px 16px;
-    border-radius: var(--r-md);
-  }
-  .site-nav a:not(.button)[aria-current="page"]::after { display: none; }
-  .site-nav .button { margin: 14px 0 0; width: 100%; justify-content: center; }
-  .nav-toggle { display: inline-flex; }
 
   /* Page hero */
   .page-hero { padding: 64px 0 52px; }
@@ -2733,6 +2762,8 @@ p { margin: 0 0 14px; color: var(--text); font-size: 1.02rem; }
   /* Notice card */
   .notice-card { padding: 28px 24px; }
   .notice-card h3 { font-size: 1.2rem; }
+  .empathy-band { padding: 32px 24px; gap: 28px; border-radius: var(--r-lg); }
+  .empathy-points li { padding: 14px 15px; gap: 12px; }
 
   /* Footer */
   .site-footer { padding: 60px 0 26px; margin-top: 80px; }
