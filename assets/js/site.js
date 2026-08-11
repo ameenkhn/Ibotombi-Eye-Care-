@@ -231,6 +231,52 @@
   }
 
   /* ----------------------------------------------------------------------
+     Appointment request form -> WhatsApp
+     Nothing is submitted anywhere: the fields are composed into a readable
+     message and handed to WhatsApp, so the patient presses send themselves.
+  ---------------------------------------------------------------------- */
+  const appointmentForm = document.querySelector('.appointment-form');
+  if (appointmentForm) {
+    appointmentForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const data = new FormData(appointmentForm);
+      const get = (k) => (data.get(k) || '').toString().trim();
+
+      // Name and phone are the only fields we genuinely need back
+      const missing = ['name', 'phone'].filter((k) => !get(k));
+      if (missing.length) {
+        const first = appointmentForm.querySelector(`[name="${missing[0]}"]`);
+        if (first) { first.focus(); first.reportValidity && first.reportValidity(); }
+        return;
+      }
+
+      const lines = [
+        'Hello Ibotombi Eye Care, I would like to request an appointment.',
+        `• Name: ${get('name')}`,
+        `• Phone: ${get('phone')}`,
+        get('service') && `• Reason: ${get('service')}`,
+        get('date')    && `• Preferred day/time: ${get('date')}`,
+        get('message') && `• Note: ${get('message')}`,
+      ].filter(Boolean);
+
+      window.open(
+        `https://wa.me/919863006204?text=${encodeURIComponent(lines.join('\n'))}`,
+        '_blank',
+        'noopener'
+      );
+
+      const btn = appointmentForm.querySelector('button[type="submit"]');
+      if (btn && !btn.disabled) {
+        const original = btn.innerHTML;
+        btn.innerHTML = 'Opening WhatsApp…';
+        btn.disabled = true;
+        setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 1800);
+      }
+    });
+  }
+
+  /* ----------------------------------------------------------------------
      Back to top
   ---------------------------------------------------------------------- */
   const toTop = document.querySelector('.fab-to-top');
