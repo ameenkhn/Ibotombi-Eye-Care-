@@ -68,37 +68,130 @@
   const navToggle = document.querySelector('.nav-toggle');
   const siteNav = document.querySelector('.site-nav');
   if (navToggle && siteNav) {
-    // Create a dimmed backdrop once, wired to close the drawer on tap
+    // Width at which the drawer gives way to the inline desktop nav.
+    // Must match the max-width of the drawer block in site.css.
+    const DRAWER_MQ = window.matchMedia('(max-width: 1279px)');
+    const SLIDE_MS = 360;                               // matches the CSS transition
+
+    if (!siteNav.id) siteNav.id = 'primary-navigation';
+    navToggle.setAttribute('aria-controls', siteNav.id);
+
+    // Dimmed backdrop, created once and wired to close the drawer on tap.
     const backdrop = document.createElement('div');
     backdrop.className = 'nav-backdrop';
     backdrop.setAttribute('aria-hidden', 'true');
     document.body.appendChild(backdrop);
 
+    let isOpen = false;
+    let stowTimer = null;
+    let scrollY = 0;
+    let lastFocused = null;
+
+    /* A closed drawer is display:none (see .is-stowed). Beyond removing the
+       horizontal scroll it also keeps the off-screen links out of the tab
+       order and the accessibility tree, which the old translate-away drawer
+       left exposed. Only meaningful below the drawer breakpoint — the CSS
+       rule is scoped to that media query, so the class is inert on desktop. */
+    const stow = () => siteNav.classList.add('is-stowed');
+    const unstow = () => siteNav.classList.remove('is-stowed');
+
+    const focusables = () =>
+      Array.from(siteNav.querySelectorAll('a[href], button:not([disabled])'))
+        .filter((el) => el.offsetParent !== null);
+
     const openNav = () => {
-      navToggle.setAttribute('aria-expanded', 'true');
+      if (isOpen) return;
+      isOpen = true;
+      clearTimeout(stowTimer);
+      lastFocused = document.activeElement;
+
+      // Pin the page. iOS Safari ignores overflow:hidden on body, so the
+      // scroll offset is captured and reapplied as a negative top.
+      scrollY = window.scrollY || window.pageYOffset || 0;
+      document.body.style.top = `-${scrollY}px`;
+      document.body.classList.add('nav-open');
+
+      unstow();
+      // Force a reflow so the browser registers the drawer at its off-screen
+      // start position before .is-open transitions it in — without this the
+      // display flip and the transform land in the same frame and it snaps.
+      void siteNav.offsetWidth;
+
       siteNav.classList.add('is-open');
       backdrop.classList.add('is-visible');
-      document.body.style.overflow = 'hidden';
-    };
-    const closeNav = () => {
-      navToggle.setAttribute('aria-expanded', 'false');
-      siteNav.classList.remove('is-open');
-      backdrop.classList.remove('is-visible');
-      document.body.style.overflow = '';
-    };
-    const toggleNav = (e) => {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-      if (expanded) closeNav(); else openNav();
+      navToggle.setAttribute('aria-expanded', 'true');
+
+      const first = focusables()[0];
+      if (first) first.focus({ preventScroll: true });
     };
 
-    // Use both click and touchstart for reliable tap response on iOS
+    const closeNav = (opts) => {
+      if (!isOpen) return;
+      isOpen = false;
+      const instant = !!(opts && opts.instant);
+
+      siteNav.classList.remove('is-open');
+      backdrop.classList.remove('is-visible');
+      navToggle.setAttribute('aria-expanded', 'false');
+
+      // Release the page and put the reader back where they were.
+      document.body.classList.remove('nav-open');
+      document.body.style.top = '';
+      window.scrollTo(0, scrollY);
+
+      // Wait for the slide-out before pulling the drawer from the layout,
+      // otherwise it vanishes mid-animation.
+      clearTimeout(stowTimer);
+      if (instant || prefersReducedMotion) stow();
+      else stowTimer = setTimeout(stow, SLIDE_MS);
+
+      if (lastFocused && document.contains(lastFocused)) {
+        lastFocused.focus({ preventScroll: true });
+      }
+    };
+
+    const toggleNav = (e) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (isOpen) closeNav(); else openNav();
+    };
+
     navToggle.addEventListener('click', toggleNav);
-    backdrop.addEventListener('click', closeNav);
-    siteNav.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeNav));
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && siteNav.classList.contains('is-open')) closeNav();
+    backdrop.addEventListener('click', () => closeNav());
+    siteNav.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => closeNav({ instant: true }));
     });
+
+    document.addEventListener('keydown', (e) => {
+      if (!isOpen) return;
+      if (e.key === 'Escape') { closeNav(); return; }
+      if (e.key !== 'Tab') return;
+
+      // Keep focus inside the drawer while it is open.
+      const items = focusables();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !siteNav.contains(active))) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault(); first.focus();
+      }
+    });
+
+    // Rotating a phone or resizing past the breakpoint must not leave the
+    // page pinned behind an invisible drawer.
+    const syncToBreakpoint = () => {
+      if (DRAWER_MQ.matches) {
+        if (!isOpen) stow();
+      } else {
+        if (isOpen) closeNav({ instant: true });
+        unstow();
+      }
+    };
+    if (DRAWER_MQ.addEventListener) DRAWER_MQ.addEventListener('change', syncToBreakpoint);
+    else DRAWER_MQ.addListener(syncToBreakpoint);            // Safari < 14
+    syncToBreakpoint();
   }
 
   /* ----------------------------------------------------------------------
@@ -228,52 +321,6 @@
     carousel.addEventListener('mouseleave', start);
     goTo(0);
     start();
-  }
-
-  /* ----------------------------------------------------------------------
-     Appointment request form -> WhatsApp
-     Nothing is submitted anywhere: the fields are composed into a readable
-     message and handed to WhatsApp, so the patient presses send themselves.
-  ---------------------------------------------------------------------- */
-  const appointmentForm = document.querySelector('.appointment-form');
-  if (appointmentForm) {
-    appointmentForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-
-      const data = new FormData(appointmentForm);
-      const get = (k) => (data.get(k) || '').toString().trim();
-
-      // Name and phone are the only fields we genuinely need back
-      const missing = ['name', 'phone'].filter((k) => !get(k));
-      if (missing.length) {
-        const first = appointmentForm.querySelector(`[name="${missing[0]}"]`);
-        if (first) { first.focus(); first.reportValidity && first.reportValidity(); }
-        return;
-      }
-
-      const lines = [
-        'Hello Ibotombi Eye Care, I would like to request an appointment.',
-        `• Name: ${get('name')}`,
-        `• Phone: ${get('phone')}`,
-        get('service') && `• Reason: ${get('service')}`,
-        get('date')    && `• Preferred day/time: ${get('date')}`,
-        get('message') && `• Note: ${get('message')}`,
-      ].filter(Boolean);
-
-      window.open(
-        `https://wa.me/919863006204?text=${encodeURIComponent(lines.join('\n'))}`,
-        '_blank',
-        'noopener'
-      );
-
-      const btn = appointmentForm.querySelector('button[type="submit"]');
-      if (btn && !btn.disabled) {
-        const original = btn.innerHTML;
-        btn.innerHTML = 'Opening WhatsApp…';
-        btn.disabled = true;
-        setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 1800);
-      }
-    });
   }
 
   /* ----------------------------------------------------------------------
