@@ -1,0 +1,19 @@
+# Netlify response headers.
+# Netlify already negotiates Brotli/gzip and revalidates with ETags; what it does
+# not do on its own is tell the browser how long it may reuse a file without asking.
+#
+# There is nothing to cache but media: each page carries its own stylesheet, script
+# and typefaces inline, so the page rule below governs all three.
+
+# Photography and video change only when the clinic reshoots. A month of reuse,
+# then a background refresh so nobody waits on the revalidation.
+# NOTE: filenames carry no content hash. If you replace a photo but keep its name,
+# give it a new name (or shorten this max-age) or repeat visitors can sit on the
+# old file for up to a month.
+/assets/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+# Pages carry their own CSS, JS and fonts, so they must always be fresh.
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
